@@ -1,0 +1,32 @@
+packages:
+  "socket.io-client": "Real-time updates for order tracking and admin notifications"
+  "zustand": "Global state management for shopping cart and admin auth"
+  "framer-motion": "Smooth page transitions and micro-interactions"
+  "react-hook-form": "Form state management"
+  "@hookform/resolvers": "Zod schema integration for form validation"
+  "date-fns": "Formatting dates and timestamps"
+
+images:
+  - path: "artifacts/a2r-meat-shop/public/images/hero-bg.png"
+    description: "Premium cinematic raw wagyu beef steak on dark slate slate background, dramatic warm directional lighting, rich reds, appetizing texture, professional food photography"
+    aspect_ratio: "16:9"
+  - path: "artifacts/a2r-meat-shop/public/images/cat-chicken.png"
+    description: "Fresh raw chicken cuts arranged beautifully on a rustic wooden board, warm lighting, top down view, appetizing"
+    aspect_ratio: "1:1"
+  - path: "artifacts/a2r-meat-shop/public/images/cat-mutton.png"
+    description: "Premium raw mutton chops on a dark stone background with sprigs of rosemary and black pepper, dramatic lighting"
+    aspect_ratio: "1:1"
+  - path: "artifacts/a2r-meat-shop/public/images/cat-fish.png"
+    description: "Fresh whole fish on crushed ice with lemon slices, bright and clean seafood market aesthetic"
+    aspect_ratio: "1:1"
+  - path: "artifacts/a2r-meat-shop/public/images/cat-eggs.png"
+    description: "Farm fresh brown eggs in a rustic woven basket, soft morning light, organic aesthetic"
+    aspect_ratio: "1:1"
+  - path: "artifacts/a2r-meat-shop/public/images/logo.png"
+    description: "Minimalist elegant logo for A2R Meat Shop, butchery cleaver crossed with a chef knife icon, dark charcoal and deep red colors, transparent background"
+    aspect_ratio: "1:1"
+
+notes:
+  - Connect to Socket.IO at window.location.origin
+  - Use @workspace/api-client-react for generated TanStack query hooks
+  - Admin token is stored in Zustand state with localStorage persistence

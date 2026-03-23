@@ -1,0 +1,215 @@
+You are a senior full-stack engineer building a production-ready application.
+
+Build a COMPLETE web application for a meat shop called:
+
+"A2R Meat Shop"
+
+This is a REAL system, not a demo.
+
+--------------------------------
+CORE REQUIREMENTS
+--------------------------------
+
+The system has TWO main parts:
+
+1. CUSTOMER APP (Frontend)
+2. ADMIN DASHBOARD (Frontend)
+3. BACKEND API (Single source of truth)
+
+Everything must be fully connected and functional.
+
+--------------------------------
+TECH STACK (MANDATORY)
+--------------------------------
+
+Frontend:
+- React (Vite)
+- Tailwind CSS
+
+Backend:
+- Node.js with Express
+
+Database:
+- PostgreSQL (or SQLite if needed for Replit)
+
+Realtime:
+- Socket.IO (for live updates)
+
+--------------------------------
+FEATURES — CUSTOMER APP
+--------------------------------
+
+1. Homepage:
+- Display "A2R Meat Shop"
+- Categories:
+  Chicken, Mutton, Fish, Eggs
+
+2. Product Listing:
+- Show:
+  name, image, price, stock
+- Only show products where stock > 0 and is_active = true
+
+3. Product Detail:
+- Quantity selection (250g, 500g, 1kg, custom)
+
+4. Cart:
+- Add/remove items
+- Dynamic total price
+
+5. Checkout:
+- Name, phone, address
+- Payment: Cash on Delivery
+
+6. Order Placement:
+- Save order in database
+- Trigger admin notification
+
+7. Order Tracking:
+- Show status:
+  Placed → Accepted → Preparing → Delivered
+- Must update in REAL TIME using Socket.IO
+
+--------------------------------
+FEATURES — ADMIN DASHBOARD
+--------------------------------
+
+1. Login:
+- Email + Password authentication
+
+2. Dashboard:
+- Show:
+  total orders
+  today revenue
+  low stock alerts
+
+3. Product Management:
+- Add product
+- Edit product
+- Delete product
+- Fields:
+  name, category, price, stock, image_url, is_active
+
+CRITICAL:
+Any update must instantly reflect on customer app (use Socket.IO)
+
+4. Order Management:
+- View all orders
+- Update status:
+  Accepted, Preparing, Delivered
+
+5. Billing System:
+- Generate simple invoice
+- Store order details
+
+6. Notifications:
+- When a new order is placed:
+  - Show instant alert in admin dashboard
+
+--------------------------------
+DATABASE DESIGN
+--------------------------------
+
+Create tables:
+
+Users:
+- id, name, phone, address
+
+Admins:
+- id, email, password_hash
+
+Products:
+- id, name, category, price, stock, image_url, is_active
+
+Orders:
+- id, user_id, total_price, status, created_at
+
+OrderItems:
+- id, order_id, product_id, quantity, price
+
+--------------------------------
+API ENDPOINTS
+--------------------------------
+
+Auth:
+POST /admin/login
+
+Products:
+GET /products
+POST /admin/products
+PUT /admin/products/:id
+DELETE /admin/products/:id
+
+Orders:
+POST /orders
+GET /admin/orders
+PUT /admin/orders/:id/status
+
+--------------------------------
+REAL-TIME SYSTEM
+--------------------------------
+
+Use Socket.IO:
+
+Emit events:
+- product_updated
+- stock_updated
+- new_order
+- order_status_changed
+
+Customer app listens for:
+- product updates
+- order status changes
+
+Admin listens for:
+- new orders
+
+--------------------------------
+UI REQUIREMENTS
+--------------------------------
+
+- Clean, modern UI
+- Mobile responsive
+- Fast loading
+- Use Tailwind for styling
+
+--------------------------------
+PROJECT STRUCTURE
+--------------------------------
+
+/client  → React app
+/server  → Node API
+/database → schema
+
+--------------------------------
+DELIVERABLE
+--------------------------------
+
+Generate FULL WORKING CODE:
+
+- Backend server
+- Database schema
+- Frontend (customer + admin)
+- API integration
+- Realtime logic
+
+NO placeholders
+NO TODO comments
+NO fake data
+
+Everything must run after:
+npm install
+npm run dev
+
+--------------------------------
+QUALITY STANDARD
+--------------------------------
+
+- Production-ready logic
+- Clean architecture
+- No unnecessary complexity
+- Handle errors properly
+- Validate inputs
+
+--------------------------------
+
+Now build the full application step by step with complete code.

@@ -7,6 +7,7 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
+import { getCustomer } from "@/pages/customer-login";
 
 const checkoutSchema = z.object({
   customerName: z.string().min(2, "Name is required"),
@@ -20,9 +21,14 @@ export default function Checkout() {
   const { items, getTotal, clearCart } = useCart();
   const [, setLocation] = useLocation();
   const createOrderMutation = useCreateOrder();
+  const customer = getCustomer();
 
   const { register, handleSubmit, formState: { errors } } = useForm<CheckoutForm>({
-    resolver: zodResolver(checkoutSchema)
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      customerName: customer?.name || "",
+      customerPhone: customer?.phone || "",
+    },
   });
 
   if (items.length === 0) {

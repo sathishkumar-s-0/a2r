@@ -8,16 +8,16 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!token && location !== "/admin/login") {
-      setLocation("/admin/login");
+    if (!token && location !== "/a2r-portal/login") {
+      setLocation("/a2r-portal/login");
     }
   }, [token, location, setLocation]);
 
-  if (!token && location !== "/admin/login") {
-    return null; // Don't flash content before redirect
+  if (!token && location !== "/a2r-portal/login") {
+    return null;
   }
 
-  if (location === "/admin/login") {
+  if (location === "/a2r-portal/login") {
     return <>{children}</>;
   }
 

@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 
 export function AdminSidebar() {
   const [location] = useLocation();
-  const { logout, admin } = useAdminAuth();
+  const { logout } = useAdminAuth();
 
   const links = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-    { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/a2r-portal/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/a2r-portal/orders", label: "Orders", icon: ShoppingCart },
+    { href: "/a2r-portal/products", label: "Products", icon: Package },
   ];
 
   return (
@@ -22,7 +22,7 @@ export function AdminSidebar() {
           </div>
           <span className="font-display font-bold text-xl tracking-tight">Admin Panel</span>
         </div>
-        
+
         <div className="space-y-2">
           {links.map((link) => {
             const Icon = link.icon;
@@ -31,8 +31,8 @@ export function AdminSidebar() {
               <Link key={link.href} href={link.href}>
                 <div className={cn(
                   "flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer",
-                  isActive 
-                    ? "bg-primary text-primary-foreground font-semibold shadow-md shadow-primary/20" 
+                  isActive
+                    ? "bg-primary text-primary-foreground font-semibold shadow-md shadow-primary/20"
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                 )}>
                   <Icon className="w-5 h-5" />
@@ -46,15 +46,15 @@ export function AdminSidebar() {
 
       <div className="mt-auto p-6 border-t border-sidebar-border">
         <div className="flex items-center gap-3 px-4 py-3 mb-2">
-          <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center font-bold text-xs">
-            {admin?.email.charAt(0).toUpperCase() || 'A'}
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center font-bold text-xs text-primary-foreground">
+            A
           </div>
           <div className="flex-1 truncate">
-            <p className="text-sm font-medium truncate">{admin?.email}</p>
+            <p className="text-sm font-medium">Administrator</p>
           </div>
         </div>
-        <button 
-          onClick={logout}
+        <button
+          onClick={() => { logout(); window.location.href = "/"; }}
           className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sidebar-foreground/70 hover:bg-destructive hover:text-destructive-foreground transition-all"
         >
           <LogOut className="w-5 h-5" />

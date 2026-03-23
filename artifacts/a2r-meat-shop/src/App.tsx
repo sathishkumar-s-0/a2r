@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +9,7 @@ import { Footer } from "./components/layout/Footer";
 import { AdminLayout } from "./components/layout/AdminLayout";
 import { CartDrawer } from "./components/CartDrawer";
 
+import CustomerLogin, { getCustomer } from "./pages/customer-login";
 import Home from "./pages/home";
 import Products from "./pages/products";
 import ProductDetail from "./pages/product-detail";
@@ -23,7 +24,16 @@ import AdminOrders from "./pages/admin/orders";
 
 const queryClient = new QueryClient();
 
-// Layout wrapper for customer-facing pages
+function CustomerGuard({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+  const customer = getCustomer();
+  if (!customer) {
+    setLocation("/");
+    return null;
+  }
+  return <>{children}</>;
+}
+
 function CustomerLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
@@ -40,41 +50,65 @@ function CustomerLayout({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
-      {/* Admin Routes */}
-      <Route path="/admin">
-        <Redirect to="/admin/login" />
-      </Route>
-      <Route path="/admin/login">
-        <AdminLayout><AdminLogin /></AdminLayout>
-      </Route>
-      <Route path="/admin/dashboard">
-        <AdminLayout><AdminDashboard /></AdminLayout>
-      </Route>
-      <Route path="/admin/products">
-        <AdminLayout><AdminProducts /></AdminLayout>
-      </Route>
-      <Route path="/admin/orders">
-        <AdminLayout><AdminOrders /></AdminLayout>
-      </Route>
-      
-      {/* Customer Routes */}
-      <Route path="/">
-        <CustomerLayout><Home /></CustomerLayout>
+      {/* Customer Login — shown first */}
+      <Route path="/" component={CustomerLogin} />
+
+      {/* Customer Shop (protected) */}
+      <Route path="/home">
+        <CustomerGuard>
+          <CustomerLayout><Home /></CustomerLayout>
+        </CustomerGuard>
       </Route>
       <Route path="/products">
-        <CustomerLayout><Products /></CustomerLayout>
+        <CustomerGuard>
+          <CustomerLayout><Products /></CustomerLayout>
+        </CustomerGuard>
       </Route>
       <Route path="/product/:id">
-        <CustomerLayout><ProductDetail /></CustomerLayout>
+        <CustomerGuard>
+          <CustomerLayout><ProductDetail /></CustomerLayout>
+        </CustomerGuard>
       </Route>
       <Route path="/checkout">
-        <CustomerLayout><Checkout /></CustomerLayout>
+        <CustomerGuard>
+          <CustomerLayout><Checkout /></CustomerLayout>
+        </CustomerGuard>
       </Route>
       <Route path="/order-confirmation/:id">
-        <CustomerLayout><OrderConfirmation /></CustomerLayout>
+        <CustomerGuard>
+          <CustomerLayout><OrderConfirmation /></CustomerLayout>
+        </CustomerGuard>
       </Route>
       <Route path="/track/:id">
         <CustomerLayout><OrderTracking /></CustomerLayout>
+      </Route>
+
+      {/* Hidden Admin Portal — not linked anywhere publicly */}
+      <Route path="/a2r-portal">
+        <Redirect to="/a2r-portal/login" />
+      </Route>
+      <Route path="/a2r-portal/login">
+        <AdminLayout><AdminLogin /></AdminLayout>
+      </Route>
+      <Route path="/a2r-portal/dashboard">
+        <AdminLayout><AdminDashboard /></AdminLayout>
+      </Route>
+      <Route path="/a2r-portal/products">
+        <AdminLayout><AdminProducts /></AdminLayout>
+      </Route>
+      <Route path="/a2r-portal/orders">
+        <AdminLayout><AdminOrders /></AdminLayout>
+      </Route>
+
+      {/* Old /admin redirect to hidden portal */}
+      <Route path="/admin">
+        <Redirect to="/a2r-portal/login" />
+      </Route>
+      <Route path="/admin/login">
+        <Redirect to="/a2r-portal/login" />
+      </Route>
+      <Route path="/admin/dashboard">
+        <Redirect to="/a2r-portal/dashboard" />
       </Route>
 
       <Route>

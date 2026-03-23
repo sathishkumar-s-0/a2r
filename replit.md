@@ -1,8 +1,8 @@
-# Workspace
+# A2R Meat Shop - Workspace
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+Full-stack meat shop e-commerce application with customer storefront, admin dashboard, and real-time Socket.IO integration.
 
 ## Stack
 
@@ -14,83 +14,83 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **Database**: PostgreSQL + Drizzle ORM
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
-- **Build**: esbuild (CJS bundle)
+- **Build**: esbuild (ESM bundle)
+- **Real-time**: Socket.IO
+- **Frontend**: React + Vite + Tailwind CSS
 
 ## Structure
 
 ```text
 artifacts-monorepo/
-├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
-├── lib/                    # Shared libraries
+├── artifacts/
+│   ├── api-server/         # Express API server (Socket.IO, auth, CRUD)
+│   └── a2r-meat-shop/      # React frontend (customer + admin)
+├── lib/
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
 │   ├── api-zod/            # Generated Zod schemas from OpenAPI
 │   └── db/                 # Drizzle ORM schema + DB connection
-├── scripts/                # Utility scripts (single workspace package)
-│   └── src/                # Individual .ts scripts, run via `pnpm --filter @workspace/scripts run <script>`
-├── pnpm-workspace.yaml     # pnpm workspace (artifacts/*, lib/*, lib/integrations/*, scripts)
-├── tsconfig.base.json      # Shared TS options (composite, bundler resolution, es2022)
-├── tsconfig.json           # Root TS project references
-└── package.json            # Root package with hoisted devDeps
+├── scripts/                # Utility scripts
+└── pnpm-workspace.yaml
 ```
 
-## TypeScript & Composite Projects
+## Application Features
 
-Every package extends `tsconfig.base.json` which sets `composite: true`. The root `tsconfig.json` lists all packages as project references. This means:
+### Customer App
+- Homepage with hero image and category grid (Chicken, Mutton, Fish, Eggs)
+- Product listing with category filtering (only active, in-stock products)
+- Product detail page with quantity selection (250g, 500g, 1kg, custom)
+- Shopping cart with add/remove/quantity controls
+- Checkout with name, phone, address — Cash on Delivery only
+- Order tracking with real-time status updates via Socket.IO
 
-- **Always typecheck from the root** — run `pnpm run typecheck` (which runs `tsc --build --emitDeclarationOnly`). This builds the full dependency graph so that cross-package imports resolve correctly. Running `tsc` inside a single package will fail if its dependencies haven't been built yet.
-- **`emitDeclarationOnly`** — we only emit `.d.ts` files during typecheck; actual JS bundling is handled by esbuild/tsx/vite...etc, not `tsc`.
-- **Project references** — when package A depends on package B, A's `tsconfig.json` must list B in its `references` array. `tsc --build` uses this to determine build order and skip up-to-date packages.
+### Admin Dashboard (at `/admin`)
+- Login: `admin@a2rmeatshop.com` / `admin123`
+- Dashboard stats: total orders, today's revenue, low stock alerts
+- Product management: add/edit/delete products
+- Order management: update status (Placed → Accepted → Preparing → Delivered)
+- Real-time new order notifications via Socket.IO
 
-## Root Scripts
+## Database Schema
 
-- `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
-- `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
+- `admins` — id, email, password_hash, created_at
+- `products` — id, name, category, price, stock, image_url, is_active, created_at
+- `orders` — id, customer_name, customer_phone, customer_address, total_price, status, created_at
+- `order_items` — id, order_id, product_id, product_name, quantity, price
 
-## Packages
+## API Endpoints
 
-### `artifacts/api-server` (`@workspace/api-server`)
+- `GET /api/products` — Public product listing
+- `POST /api/orders` — Place new order
+- `GET /api/orders/:id/status` — Get order status
+- `POST /api/admin/login` — Admin authentication
+- `GET /api/admin/products` — All products (admin)
+- `POST /api/admin/products` — Create product
+- `PUT /api/admin/products/:id` — Update product
+- `DELETE /api/admin/products/:id` — Delete product
+- `GET /api/admin/orders` — All orders with items
+- `PUT /api/admin/orders/:id/status` — Update order status
+- `GET /api/admin/dashboard` — Dashboard stats
 
-Express 5 API server. Routes live in `src/routes/` and use `@workspace/api-zod` for request and response validation and `@workspace/db` for persistence.
+## Real-time Socket.IO Events
 
-- Entry: `src/index.ts` — reads `PORT`, starts Express
-- App setup: `src/app.ts` — mounts CORS, JSON/urlencoded parsing, routes at `/api`
-- Routes: `src/routes/index.ts` mounts sub-routers; `src/routes/health.ts` exposes `GET /health` (full path: `/api/health`)
-- Depends on: `@workspace/db`, `@workspace/api-zod`
-- `pnpm --filter @workspace/api-server run dev` — run the dev server
-- `pnpm --filter @workspace/api-server run build` — production esbuild bundle (`dist/index.cjs`)
-- Build bundles an allowlist of deps (express, cors, pg, drizzle-orm, zod, etc.) and externalizes the rest
+- `product_updated` — When a product is created/edited
+- `stock_updated` — When stock changes after an order
+- `new_order` — When a customer places a new order (admin notification)
+- `order_status_changed` — When admin updates order status (customer tracking)
 
-### `lib/db` (`@workspace/db`)
+## Development Commands
 
-Database layer using Drizzle ORM with PostgreSQL. Exports a Drizzle client instance and schema models.
+```bash
+# Run API server
+pnpm --filter @workspace/api-server run dev
 
-- `src/index.ts` — creates a `Pool` + Drizzle instance, exports schema
-- `src/schema/index.ts` — barrel re-export of all models
-- `src/schema/<modelname>.ts` — table definitions with `drizzle-zod` insert schemas (no models definitions exist right now)
-- `drizzle.config.ts` — Drizzle Kit config (requires `DATABASE_URL`, automatically provided by Replit)
-- Exports: `.` (pool, db, schema), `./schema` (schema only)
+# Run frontend
+pnpm --filter @workspace/a2r-meat-shop run dev
 
-Production migrations are handled by Replit when publishing. In development, we just use `pnpm --filter @workspace/db run push`, and we fallback to `pnpm --filter @workspace/db run push-force`.
+# Push DB schema changes
+pnpm --filter @workspace/db run push
 
-### `lib/api-spec` (`@workspace/api-spec`)
-
-Owns the OpenAPI 3.1 spec (`openapi.yaml`) and the Orval config (`orval.config.ts`). Running codegen produces output into two sibling packages:
-
-1. `lib/api-client-react/src/generated/` — React Query hooks + fetch client
-2. `lib/api-zod/src/generated/` — Zod schemas
-
-Run codegen: `pnpm --filter @workspace/api-spec run codegen`
-
-### `lib/api-zod` (`@workspace/api-zod`)
-
-Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used by `api-server` for response validation.
-
-### `lib/api-client-react` (`@workspace/api-client-react`)
-
-Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
-
-### `scripts` (`@workspace/scripts`)
-
-Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+# Run codegen (after OpenAPI changes)
+pnpm --filter @workspace/api-spec run codegen
+```

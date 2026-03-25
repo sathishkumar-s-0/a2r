@@ -4,6 +4,7 @@
 dist
 tmp
 out-tsc
+.env
 *.tsbuildinfo
 .expo
 .expo-shared
@@ -47,19 +48,3 @@ Thumbs.db
 # Replit
 .cache/
 .local/
-.replit
-.replit-artifact/
-
-# Environment variables
-.env
-.env.*
-!.env.example
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Build artifacts
-dist
-artifacts/**/dist
-node_modules

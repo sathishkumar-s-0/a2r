@@ -5,14 +5,14 @@ import bcrypt from "bcryptjs";
 async function seed() {
   console.log("Seeding database...");
 
-  const existingAdmin = await db.select().from(adminsTable).where(eq(adminsTable.email, "admin@a2rmeatshop.com"));
+  const existingAdmin = await db.select().from(adminsTable).where(eq(adminsTable.email, "admin"));
   if (existingAdmin.length === 0) {
-    const passwordHash = await bcrypt.hash("admin123", 10);
+    const passwordHash = await bcrypt.hash("admin@123", 10);
     await db.insert(adminsTable).values({
-      email: "admin@a2rmeatshop.com",
+      email: "admin",
       passwordHash,
     });
-    console.log("Admin created: admin@a2rmeatshop.com / admin123");
+    console.log("Admin created: admin / admin@123");
   } else {
     console.log("Admin already exists");
   }
